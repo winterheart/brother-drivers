@@ -1,1 +1,0 @@
-gcc brcupsconfig.c -o brcupsconfig2
