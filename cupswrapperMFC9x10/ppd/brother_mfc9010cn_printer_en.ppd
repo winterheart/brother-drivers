@@ -1,26 +1,26 @@
 *PPD-Adobe: "4.3"
 
 *%================================================
-*%	Copyright(C) 2008 Brother Industries, Ltd.
-*%	"Brother HL-3040CN series CUPS"
+*%	Copyright(C) 2008-2011 Brother Industries, Ltd.
+*%	"Brother MFC-9010CN CUPS"
 *%================================================
 
 *%==== General Information Keywords ========================
 *FormatVersion: "4.3"
-*FileVersion: "1.24"
+*FileVersion: "1.23"
 *LanguageVersion: English
 *LanguageEncoding: ISOLatin1
-*PCFileName: "hl3040cn.ppd"
+*PCFileName: "mfc9010cn.ppd"
 *Manufacturer: "Brother"
-*Product: "(HL-3040CN series)"
-*1284DeviceID: "MFG:Brother;MDL:HL3040CN"
+*Product: "(MFC-9010CN)"
+*1284DeviceID: "MFG:Brother;MDL:MFC-9010CN"
 *cupsVersion: 1.3
-*cupsManualCopies: true
-*cupsFilter: "application/vnd.cups-postscript 0 brlpdwrapperhl3040cn"
+*cupsManualCopies: false
+*cupsFilter: "application/vnd.cups-postscript 0 brlpdwrappermfc9010cn"
 *cupsModelNumber: 3
-*ModelName: "Brother HL3040CN"
-*ShortNickName: "Brother HL3040CN"
-*NickName: "Brother HL3040CN CUPS"
+*ModelName: "Brother MFC-9010CN"
+*ShortNickName: "Brother MFC-9010CN"
+*NickName: "Brother MFC-9010CN CUPS"
 *PSVersion: "(3010.106) 3"
 
 *%==== Basic Device Capabilities =============

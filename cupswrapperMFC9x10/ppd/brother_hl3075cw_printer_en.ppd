@@ -1,26 +1,26 @@
 *PPD-Adobe: "4.3"
 
 *%================================================
-*%	Copyright(C) 2008 Brother Industries, Ltd.
-*%	"Brother HL-3070CW series CUPS"
-*%================================================ 
+*%	Copyright(C) 2008-2011 Brother Industries, Ltd.
+*%	"Brother HL3075CW CUPS"
+*%================================================
 
 *%==== General Information Keywords ========================
 *FormatVersion: "4.3"
-*FileVersion: "1.24"
+*FileVersion: "1.23"
 *LanguageVersion: English
 *LanguageEncoding: ISOLatin1
-*PCFileName: "hl3070cw.ppd"
+*PCFileName: "hl3075cw.ppd"
 *Manufacturer: "Brother"
-*Product: "(HL-3070CW series)"
-*1284DeviceID: "MFG:Brother;MDL:HL-3070CW series"
+*Product: "(HL3075CW)"
+*1284DeviceID: "MFG:Brother;MDL:HL3075CW"
 *cupsVersion: 1.3
-*cupsManualCopies: true
-*cupsFilter: "application/vnd.cups-postscript 0 brlpdwrapperhl3070cw"
+*cupsManualCopies: false
+*cupsFilter: "application/vnd.cups-postscript 0 brlpdwrapperhl3075cw"
 *cupsModelNumber: 3
-*ModelName: "Brother HL-3070CW series"
-*ShortNickName: "Brother HL-3070CW series"
-*NickName: "Brother HL-3070CW series CUPS"
+*ModelName: "Brother HL3075CW"
+*ShortNickName: "Brother HL3075CW"
+*NickName: "Brother HL3075CW CUPS"
 *PSVersion: "(3010.106) 3"
 
 *%==== Basic Device Capabilities =============

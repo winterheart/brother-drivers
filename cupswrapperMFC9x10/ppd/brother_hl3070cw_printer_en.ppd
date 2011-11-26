@@ -1,8 +1,8 @@
 *PPD-Adobe: "4.3"
 
 *%================================================
-*%	Copyright(C) 2008 Brother Industries, Ltd.
-*%	"Brother DCP-9010CN CUPS"
+*%	Copyright(C) 2008-2011 Brother Industries, Ltd.
+*%	"Brother HL3070CW CUPS"
 *%================================================
 
 *%==== General Information Keywords ========================
@@ -10,17 +10,17 @@
 *FileVersion: "1.23"
 *LanguageVersion: English
 *LanguageEncoding: ISOLatin1
-*PCFileName: "dcp9010cn.ppd"
+*PCFileName: "hl3070cw.ppd"
 *Manufacturer: "Brother"
-*Product: "(DCP-9010CN)"
-*1284DeviceID: "MFG:Brother;MDL:DCP-9010CN"
+*Product: "(HL3070CW)"
+*1284DeviceID: "MFG:Brother;MDL:HL3070CW"
 *cupsVersion: 1.3
 *cupsManualCopies: false
-*cupsFilter: "application/vnd.cups-postscript 0 brlpdwrapperdcp9010cn"
+*cupsFilter: "application/vnd.cups-postscript 0 brlpdwrapperhl3070cw"
 *cupsModelNumber: 3
-*ModelName: "Brother DCP-9010CN"
-*ShortNickName: "Brother DCP-9010CN"
-*NickName: "Brother DCP-9010CN CUPS"
+*ModelName: "Brother HL3070CW"
+*ShortNickName: "Brother HL3070CW"
+*NickName: "Brother HL3070CW CUPS"
 *PSVersion: "(3010.106) 3"
 
 *%==== Basic Device Capabilities =============

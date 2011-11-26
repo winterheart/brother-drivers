@@ -1,5 +1,6 @@
+/* $Id: brcupsconfig.c,v 1.8 2005/08/22 01:52:02 cvs Exp $ */
 //* Brother CUPS wrapper tool
-//* Copyright (C) 2005-2009 Brother. Industries, Ltd.//*
+//* Copyright (C) 2005-2011 Brother. Industries, Ltd.//*
 //*                                    Ver1.00
 
 //* This program is free software; you can redistribute it and/or modify it
@@ -25,12 +26,34 @@
 
 #include "brcups_commands.h"
 
+//#include "brcups_setting.h"
+
 
 CMDLINELIST standard_side_commandlinelist[];
 
 int divide_media_token(char *input,char output[5][30]);
 
+
+#if 0
+#define DEBUGPRINT(a)                    fprintf(stderr,a);fflush(stdout)
+#define DEBUGPRINT1(a1,a2)               fprintf(stderr,a1,a2);fflush(stdout)
+#define DEBUGPRINT2(a1,a2,a3)            fprintf(stderr,a1,a2,a3);fflush(stdout)
+#define DEBUGPRINT3(a1,a2,a3,a4)         fprintf(stderr,a1,a2,a3,a4);fflush(stdout)
+#define DEBUGPRINT4(a1,a2,a3,a4,a5)      fprintf(stderr,a1,a2,a3,a4,a5);fflush(stdout)
+#define DEBUGPRINT5(a1,a2,a3,a4,a5,a6)   fprintf(stderr,a1,a2,a3,a4,a5,a6);fflush(stdout)
+#else
+#define DEBUGPRINT(a)              
+#define DEBUGPRINT1(a1,a2)         
+#define DEBUGPRINT2(a1,a2,a3)      
+#define DEBUGPRINT3(a1,a2,a3,a4)   
+#define DEBUGPRINT4(a1,a2,a3,a4,a5)
+#define DEBUGPRINT5(a1,a2,a3,a4,a5,a6)
+#endif
+
+
+
 int     log_level = 0;
+
 
 typedef struct {
   char value[50];
@@ -40,6 +63,10 @@ typedef struct {
 
 SETCOMMAND command_array[100];
 
+
+//
+//   local functions 
+//
 int initialize_command_list();
 int add_command_list(char *option,char  *command);
 int add_command_list_brcommand(char  *command);
@@ -49,6 +76,7 @@ char *delete_ppd_comment(char *line);
 char *chk_ppd_default_setting_line(char *ppd_line);
 char *get_token(char *input,char *output);
 
+void write_log_file(int level,char *format,...);
 int main(int argc,char * argv[]) {
 
   char *printer;
@@ -57,6 +85,11 @@ int main(int argc,char * argv[]) {
   char *p;
   char *commandline,*ppdfile, *printer_model;
   int i,ii;
+  DEBUGPRINT("main:start\n");
+
+  //debug code
+//  fprintf (stderr, "ERROR: brcupsconfpt1 pid=%d\n", getpid());
+ // sleep(100);
 
   if(argc < 1){                         
     return 0;
@@ -97,47 +130,123 @@ int main(int argc,char * argv[]) {
   initialize_command_list();
 
 
+
+
+  //************************************
+  //  set default setting
+  //************************************
+
+#if	0
+  DEBUGPRINT("main:set default setting\n");
+  write_log_file(5,"DEFAULT SETTING\n");  
+  for ( i = 0; default_setting[i] != NULL; i ++){
+    p = strstr_ex(default_setting[i],"BROTHERPRINTER_XXX");
+    if(p){
+      p = strchr(p,'-');
+      if(p){
+	add_command_list_brcommand(p);
+      }
+    }
+  }
+#endif	// 0
+
+  //************************************
+  //  set PPD option 
+  //************************************
+
+
+
+
+  DEBUGPRINT("main:set PPD option (string)\n");
+  write_log_file(5,"PPD SETTING\n");
+
   while(fgets(ppd_line,sizeof(ppd_line),fp_ppd)){
     if(NULL == (ppd_line))continue;
     if(NULL == chk_ppd_default_setting_line(ppd_line))continue;
 
+    //************************************
+    //  set PPD option (string)
+    //************************************
+
 	for ( i = 0; ppdcommand_all_list[i]!= NULL; i ++)
 	{
+      //DEBUGPRINT2(    "main: set PPD option (string)    [%s]  [%s]\n",
+      //	      ppd_line,ppdcommand_all_list[i]->label);
 		p = strstr_ex(ppd_line,ppdcommand_all_list[i]->label);
 		if(p)
 		{
+	//DEBUGPRINT2(    "main: set PPD option (string)    [%s]  [%s]\n",
+	//       ppdcommand_all_list[i]->label,ppd_line);
+	
+		#if 1		// 
 			char * tmp;
 			tmp = p + strlen( ppdcommand_all_list[i]->label);
+        #endif
 			for (ii = 0; ppdcommand_all_list[i]->ppdcommandlist[ii].value != NULL; ii++)
 			{
+	  //DEBUGPRINT3(    "main: set PPD option (string)    [%s]  [%s]  [%s]\n",
+	  //       ppdcommand_all_list[i]->label,ppdcommand_all_list[i]->ppdcommandlist[ii].value ,  ppd_line);
+	  		#if 0        // 
+				p = strstr_ex(ppd_line,ppdcommand_all_list[i]->ppdcommandlist[ii].value);
+			#else
 				p = strstr_ex(tmp,ppdcommand_all_list[i]->ppdcommandlist[ii].value);
+			#endif
+
+
+
 				if(p)
 				{
 					add_command_list_brcommand(ppdcommand_all_list[i]->ppdcommandlist[ii].brcommand);
 					break;
 				}
 			}
+
+
+
+
 		}
 	}
 
-    for ( i = 0; PPDdefaultN[i].option!= NULL; i ++)
-	{
-		strcpy(tmp,PPDdefaultN[i].option);
-		p_tmp = tmp;
-		if(tmp[0] == '^')
-			p_tmp ++;
-		p = strstr_ex(ppd_line,p_tmp);
-		if(p)
-		{
-			sprintf(tmp,"%s  %s",PPDdefaultN[i].value, p + strlen(PPDdefaultN[i].option));
-			get_token(PPDdefaultN[i].value ,tmp_op);
-			get_token(p + strlen(PPDdefaultN[i].option) ,tmp_n);
-			add_command_list(tmp_op,tmp_n);
-		}
-	}
+
+
+
+
+
+
+    //************************************
+    //  set PPD option (numerical)
+    //************************************
+    for ( i = 0; PPDdefaultN[i].option!= NULL; i ++){
+      strcpy(tmp,PPDdefaultN[i].option);
+      p_tmp = tmp;
+      if(tmp[0] == '^')p_tmp ++;
+      p = strstr_ex(ppd_line,p_tmp);
+      if(p){
+	//DEBUGPRINT2(    "main: set PPD option (numerical)    [%s]  [%s]\n",
+	//       ppd_line,p_tmp);
+
+	sprintf(tmp,"%s  %s",PPDdefaultN[i].value,
+	       p + strlen(PPDdefaultN[i].option));
+        //DEBUGPRINT1("set commandline option(n)   **********    : [%s]\n",tmp);
+
+	get_token(PPDdefaultN[i].value ,tmp_op);
+	get_token(p + strlen(PPDdefaultN[i].option) ,tmp_n);
+
+	add_command_list(tmp_op,tmp_n);
+
+      }
+    }
 
   }
 
+	//************************************
+	//  set standard command line option (string)
+	//
+	//	stardard command (such as "media=A4") is lower priority than BROTHER command.
+	//
+	//************************************
+	DEBUGPRINT("main:set standard command line option (string)\n");
+	write_log_file(5,"STANDARD COMMAND LINE SETTING(S)\n");
 	for ( i = 0; standard_commandlinelist[i].value != NULL; i ++)
 	{
 		p = strstr_ex(commandline,standard_commandlinelist[i].option);
@@ -147,6 +256,14 @@ int main(int argc,char * argv[]) {
 		}
 	}
 
+
+
+
+	//************************************
+	//  set brother command line option (string)
+	//************************************
+	DEBUGPRINT("main:set brother command line option (string)\n");
+	write_log_file(5,"BROTHER COMMAND LINE SETTING(S)\n");  
 	for ( i = 0; commandlinelist[i].value != NULL; i ++)
 	{
 		p = strstr_ex(commandline,commandlinelist[i].option);
@@ -156,6 +273,12 @@ int main(int argc,char * argv[]) {
 		}
 	}
 
+
+	//************************************
+	//  set cups standard command line option (duplex)
+	//************************************
+	DEBUGPRINT("main:set standard command line option (duplex)\n");
+	write_log_file(5,"STANDARD COMMAND LINE SETTING(DUPLEX)\n");  
 	for ( i = 0; standard_side_commandlinelist[i].value != NULL; i ++)
 	{
     	p = strstr_ex(commandline,standard_side_commandlinelist[i].option);
@@ -164,6 +287,46 @@ int main(int argc,char * argv[]) {
 			add_command_list_brcommand(standard_side_commandlinelist[i].value);
 		}
 	}
+
+
+
+
+
+#if 0	
+  //************************************
+  //  set cups standard command line option (media )
+  //************************************
+  DEBUGPRINT("main:set standard command line option (media)\n");
+  write_log_file(5,"STANDARD COMMAND LINE SETTING(MEDIA)\n");  
+  {
+    char output[5][30];
+    int max;
+
+    max = divide_media_token(commandline,output);
+    //DEBUGPRINT2("main:set command line option (media)    Loop count %d   %s \n",
+    //         max,commandline);
+    for ( ii=0; ii < max; ii++){
+//      for ( i = 0; standard_media_commandlinelist[i].value != NULL; i ++){
+		for ( i = 0; standard_commandlinelist[i].value != NULL; i ++){
+		
+	//DEBUGPRINT2("main:set command line option (media)    Loop [%s] [%s]\n",
+	//	    output[ii],standard_media_commandlinelist[i].option);
+			p = strstr(standard_commandlinelist[i].option, output[ii]);
+			if(p){
+				add_command_list_brcommand(standard_commandlinelist[i].value);
+			}
+		}
+    	}
+  }
+
+#endif
+
+  
+	//************************************
+	//  set command line option (numerical)
+	//************************************
+	DEBUGPRINT("main:set command line option (numerical)\n");
+	write_log_file(5,"COMMAND LINE SETTING(N)\n");
 
 	for(i = 0; commandlinelist2[i].option != NULL; i ++)
 	{
@@ -178,6 +341,10 @@ int main(int argc,char * argv[]) {
 		}
 	}
 
+  //************************************
+  //  call brprintconf
+  //************************************
+
 	exec_brprintconf(brprintconf,printer_model);
 
 	return 0;
@@ -189,6 +356,8 @@ int main(int argc,char * argv[]) {
 int initialize_command_list(){
   int i;
   char *p;
+
+  //DEBUGPRINT("initialize_command_list:start\n");
 
 	p = (char *)command_array;
 	for ( i = 0; i < (int)sizeof(command_array) ; i ++){
@@ -204,12 +373,20 @@ int exec_brprintconf(char *brprintconf,char *printer){
   int i;
   char exec[300];
 
+  DEBUGPRINT("exec_brprintconf:start\n");
+
   for ( i = 0; command_array[i].value[0] != 0; i ++ ){
     sprintf(exec,"%s_%s  %s  \"%s\"",brprintconf, printer,
 	    command_array[i].option,
 	    command_array[i].value);
 
+    write_log_file(1,"%s\n",exec);
+
+//	fprintf (stderr, "ERROR:%s\n", exec);
+//    printf ("Hello\n");
     system(exec);
+
+    //DEBUGPRINT1("exec: %s\n",exec);
   }
 
 	return 0;
@@ -223,21 +400,31 @@ int add_command_list(char *option,char  *value){
   int i;
 
 
+  //DEBUGPRINT2("   add_command_list:start [%s] [%s]\n",option,value);
   if(!option || !value || !option[0] || !value[0]){
+
+
+    //DEBUGPRINT2("   add_command_list:start ERROR [%d] [%s]\n",option,value);
     return 0;
   }
 
   for ( i = 0; command_array[i].option[0] != 0; i ++ ){
+    //DEBUGPRINT4("   add_command_list:[%s] [%s] [%s] %d\n"
+    //	,command_array[i].value,option,value,i);
     p = strstr_ex(command_array[i].option , option);
     if(p){
+      //DEBUGPRINT2("     add_command_list   chg element %s %s\n",option,value);  
+      write_log_file(3,"        C  %s  %s\n",option,value);  
       strcpy(command_array[i].value, value);
       break;
     }
   }
 
   if(command_array[i].option[0] == 0){
+    //DEBUGPRINT2("     add_command_list   add element %s %s\n",option,value);  
     strcpy( command_array[i].option ,option);
     strcpy( command_array[i].value  ,value);
+    write_log_file(3,"        A  %s  %s\n",option,value);  
   }
   return 1;
 }
@@ -248,10 +435,15 @@ int add_command_list(char *option,char  *value){
 int add_command_list_brcommand_sub(char  *command){
   char  option[100],*p1,*p2;
   char  value[100];
+  //DEBUGPRINT1("   add_command_list_brcommand:start %s\n",command);
 
   strncpy(option,command,sizeof(option)-1);
 
-  option[strlen(option)] = 0;
+  option[strlen(option)] = 0;	
+
+
+
+
   p1 = strchr(option, ' ');
   p2 = strchr(option, '\t');
 
@@ -268,6 +460,8 @@ int add_command_list_brcommand_sub(char  *command){
 
   strcpy(value , p1);
 
+
+  //DEBUGPRINT2("call add_command_list   %s %s",option,value);
   return add_command_list(option,value);
 
 }
@@ -404,7 +598,6 @@ char *get_token(char *input,char *output){
   }
 
 
-
   while((c = *pi)){
     switch(c){
     case ' ':
@@ -415,6 +608,7 @@ char *get_token(char *input,char *output){
     case 0x0c:
     case 0x00:
       *po = 0;
+      //DEBUGPRINT2("get_token2A:   [%s]  [%s] \n", input,output);
       return output; 
 
 
@@ -425,9 +619,39 @@ char *get_token(char *input,char *output){
     pi ++;
   }
   *po = 0;
+  //  DEBUGPRINT2("get_token2B :   [%s]  [%s] \n", input,output);
  
   return output;
 }
+
+
+
+
+
+
+
+
+//--------------------for debug log-------------------
+void write_log_file(int level,char *format,...){
+//  FILE  *fp_logfile;
+
+  char  logdata[300];
+  va_list argp;
+  va_start(argp,format);
+
+
+  if(log_level == 0)return;
+  if(level > log_level)return;
+
+  vsprintf(logdata,format,argp);
+
+  fputs(logdata , stdout);
+  fflush(stdout);
+  return ;
+}
+
+
+
 
 #define  MEDIAEQ1   "media="
 #define  MEDIAEQ2   "PageSize="
@@ -480,6 +704,13 @@ int divide_media_token(char *input,char output[5][30]){
   }
   return i;
 }
+
+
+
+
+
+
+
 
 CMDLINELIST standard_side_commandlinelist[] = {
 
