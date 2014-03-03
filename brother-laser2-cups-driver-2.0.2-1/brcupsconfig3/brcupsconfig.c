@@ -599,13 +599,13 @@ void write_log_file(int level,char *format,...){
 
 
 int divide_media_token(char *input,char output[5][30]){
-  char media_command[100];
+  char media_command[1000];
   char *p,*pp;
   int i;
 
   p = strstr(input,MEDIAEQ);
   if(p){
-    strcpy(media_command,p+strlen(MEDIAEQ));
+    strncpy(media_command,p+strlen(MEDIAEQ),sizeof(media_command));
   }
   else{
     return 0;
